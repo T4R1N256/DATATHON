@@ -4,3 +4,15 @@ data/
 nginx/panel.htpasswd
 __pycache__/
 *.jsonl
+
+# Lo que ya vivía en ~/datathon: datos y trabajo local, nunca al repo
+/eventos
+/eventos_falsos
+/repo
+/.placas_hmac_key
+/lista_robados.hmac
+
+# Lo que ya vivía en ~/datathon: datos y trabajo local, nunca al repo
+/eventos
+/eventos_falsos
+/repo
