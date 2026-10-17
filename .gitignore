@@ -1,0 +1,6 @@
+.env
+*.key
+data/
+nginx/panel.htpasswd
+__pycache__/
+*.jsonl

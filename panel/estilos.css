@@ -1,0 +1,127 @@
+/* Panel del operador. Colores propios: se ve igual con el tema claro u oscuro de JupyterLab.
+   Las variables --jp-widgets-* se redefinen dentro del panel para que las etiquetas,
+   cajas de texto y botones de ipywidgets no hereden los colores del tema oscuro. */
+
+.pv-panel {
+  --pv-fondo: #f8fafc;
+  --pv-tarjeta: #ffffff;
+  --pv-borde: #e2e8f0;
+  --pv-texto: #0f172a;
+  --pv-texto-2: #64748b;
+  --pv-titulo: #334155;
+  --pv-alta: #15803d;   --pv-alta-bg: #dcfce7;
+  --pv-media: #b45309;  --pv-media-bg: #fef3c7;
+  --pv-baja: #b91c1c;   --pv-baja-bg: #fee2e2;
+  --pv-nd: #94a3b8;     --pv-nd-bg: #f1f5f9;
+
+  --jp-widgets-color: var(--pv-texto);
+  --jp-widgets-label-color: var(--pv-texto);
+  --jp-widgets-input-color: var(--pv-texto);
+  --jp-widgets-input-background-color: #ffffff;
+  --jp-widgets-input-border-color: var(--pv-borde);
+
+  background: var(--pv-fondo);
+  color: var(--pv-texto);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  padding: 24px;
+  border-radius: 16px;
+  max-width: 1200px;
+  gap: 16px;
+}
+
+.pv-card {
+  background: var(--pv-tarjeta);
+  border: 1px solid var(--pv-borde);
+  border-radius: 16px;
+  padding: 20px 24px;
+}
+
+.pv-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pv-titulo {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pv-titulo);
+}
+
+/* Recortes: mismo ancho, píxeles reales visibles */
+.pv-recortes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pv-recortes-uno { grid-template-columns: 1fr 1fr; }
+.pv-figura { margin: 0; }
+.pv-img {
+  display: block;
+  width: 100%;
+  image-rendering: pixelated;
+  background: var(--pv-nd-bg);
+  border: 1px solid var(--pv-borde);
+  border-radius: 8px;
+}
+.pv-img-vacia {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pv-texto-2);
+  font-size: 13px;
+}
+.pv-pie { margin-top: 8px; font-size: 13px; color: var(--pv-texto-2); }
+
+/* Badges de estado */
+.pv-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.pv-badge-alerta     { color: var(--pv-baja);  background: var(--pv-baja-bg);  border-color: var(--pv-baja); }
+.pv-badge-revision   { color: var(--pv-media); background: var(--pv-media-bg); border-color: var(--pv-media); }
+.pv-badge-nolegible  { color: var(--pv-texto-2); background: var(--pv-nd-bg); border-color: var(--pv-nd); }
+.pv-badge-falso      { color: #6d28d9; background: #ede9fe; border-color: #6d28d9; }
+
+/* Placa por carácter */
+.pv-placa { display: flex; gap: 8px; margin: 4px 0 12px; }
+.pv-char {
+  width: 52px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--pv-texto);
+  border: 2px solid;
+  border-radius: 8px;
+}
+.pv-conf-alta  { border-color: var(--pv-alta);  background: var(--pv-alta-bg); }
+.pv-conf-media { border-color: var(--pv-media); background: var(--pv-media-bg); }
+.pv-conf-baja  { border-color: var(--pv-baja);  background: var(--pv-baja-bg); }
+.pv-conf-nd    { border-color: var(--pv-nd);    background: var(--pv-nd-bg); }
+
+.pv-meta { margin: 0; font-size: 13px; color: var(--pv-texto-2); }
+.pv-nolegible { margin: 4px 0 12px; font-size: 15px; color: var(--pv-texto); }
+.pv-card p { line-height: 1.5; }
+.pv-aviso { margin: 0; font-size: 14px; color: var(--pv-baja); }
+
+/* Botones (los de ipywidgets llevan la clase jupyter-button) */
+.pv-botones { gap: 12px; align-items: center; }
+.pv-panel .pv-btn {
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.pv-panel .pv-btn-primario { background: var(--pv-texto); color: #ffffff; border: 1px solid var(--pv-texto); }
+.pv-panel .pv-btn-secundario { background: #ffffff; color: var(--pv-texto); border: 1px solid var(--pv-borde); }
+.pv-operador input { height: 44px; border-radius: 12px; padding: 0 12px; }

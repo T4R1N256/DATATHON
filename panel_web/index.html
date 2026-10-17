@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel del operador</title>
+<link rel="stylesheet" href="estilos.css">
+<style>
+  body { margin: 0; background: #f8fafc; }
+  .pv-panel { display: flex; flex-direction: column; margin: 0 auto; }
+  .pv-botones { display: flex; flex-wrap: wrap; }
+  .pv-sesion { margin-left: auto; font-size: 13px; color: var(--pv-texto-2); }
+  .pv-btn { cursor: pointer; }
+  .pv-btn:disabled { opacity: 0.5; cursor: default; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main class="pv-panel">
+  <div id="recortes"></div>
+  <div id="lectura"></div>
+  <div id="reporte"></div>
+  <div class="pv-botones">
+    <button id="confirmar" class="pv-btn pv-btn-primario" hidden>Confirmar</button>
+    <button id="descartar" class="pv-btn pv-btn-secundario" hidden>Descartar</button>
+    <button id="siguiente" class="pv-btn pv-btn-secundario" hidden>Siguiente</button>
+    <button id="buscar" class="pv-btn pv-btn-secundario" hidden>Buscar eventos nuevos</button>
+    <span id="sesion" class="pv-sesion"></span>
+  </div>
+  <div id="aviso"></div>
+</main>
+<script>
+  // El HTML de cada zona lo arma el servidor con las mismas vistas del notebook,
+  // que escapan todo texto del evento. Aquí solo se inserta y se manejan botones.
+  const $ = (id) => document.getElementById(id);
+  const omitidos = [];   // no legibles que el operador pasó con Siguiente
+  let actual = null;
+  let espera = null;
+
+  function mostrarAviso(texto) {
+    const caja = $("aviso");
+    caja.replaceChildren();
+    if (!texto) return;
+    const p = document.createElement("p");
+    p.className = "pv-aviso";
+    p.textContent = texto;
+    caja.append(p);
+  }
+
+  function pintar(datos) {
+    actual = datos.evento;
+    $("sesion").textContent = datos.operador ? `Sesión: ${datos.operador}` : "Sin sesión";
+    for (const id of ["confirmar", "descartar", "siguiente", "buscar"]) $(id).hidden = true;
+
+    if (!actual) {
+      $("recortes").innerHTML =
+        '<div class="pv-card"><h3 class="pv-titulo">Sin eventos pendientes</h3>' +
+        '<p class="pv-meta">Se buscan eventos nuevos cada 5 segundos.</p></div>';
+      $("lectura").innerHTML = "";
+      $("reporte").innerHTML = "";
+      $("buscar").hidden = false;
+      espera = setTimeout(cargar, 5000);
+      return;
+    }
+    $("recortes").innerHTML = actual.html.recortes;
+    $("lectura").innerHTML = actual.html.lectura;
+    $("reporte").innerHTML = actual.html.reporte;
+    $("confirmar").textContent = actual.etiqueta_confirmar;
+    for (const accion of actual.acciones) $(accion).hidden = false;
+  }
+
+  async function cargar() {
+    clearTimeout(espera);
+    try {
+      const url = "api/siguiente?omitir=" + encodeURIComponent(omitidos.join(","));
+      const r = await fetch(url, { cache: "no-store" });
+      if (!r.ok) throw new Error(`el servidor respondió ${r.status}`);
+      mostrarAviso("");
+      pintar(await r.json());
+    } catch (error) {
+      mostrarAviso(`No se pudo cargar el evento: ${error.message}. Reintento en 5 segundos.`);
+      espera = setTimeout(cargar, 5000);
+    }
+  }
+
+  async function decidir(accion) {
+    if (!actual) return;
+    const botones = [$("confirmar"), $("descartar")];
+    botones.forEach((b) => (b.disabled = true));
+    try {
+      const r = await fetch("api/decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ evento_id: actual.evento_id, accion }),
+      });
+      const datos = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        mostrarAviso(datos.error || `Error ${r.status}`);
+        if (r.status === 409) await cargar();
+        return;
+      }
+      await cargar();
+    } catch (error) {
+      mostrarAviso(`No se pudo registrar la decisión: ${error.message}`);
+    } finally {
+      botones.forEach((b) => (b.disabled = false));
+    }
+  }
+
+  $("confirmar").onclick = () => decidir("confirmar");
+  $("descartar").onclick = () => decidir("descartar");
+  $("siguiente").onclick = () => { if (actual) omitidos.push(actual.evento_id); cargar(); };
+  $("buscar").onclick = cargar;
+  cargar();
+</script>
+</body>
+</html>

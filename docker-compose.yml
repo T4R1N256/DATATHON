@@ -1,0 +1,8 @@
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "80:80"        # cambia el primer número por el puerto público que te dio el portal
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+    restart: unless-stopped
